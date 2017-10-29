@@ -4,20 +4,21 @@
 
   Optimus post processor configuration.
   Adjust from smoothie post processor configuration.
+  Adjust from optimus.cps (20170913) by screek.
   $Revision: 41096 dedfcdb5a3d9f4565c4f582d694b822c817b986a $
   $Date: 2016-06-26 13:51:08 $
   
   FORKID {82D71B92-0A11-49F9-B9EA-7E75CE9DA459}
 */
 
-description = "Generic Optimus Mill";
+description = "Screek Optimus Mill";
 vendor = "Febtop tech";
 vendorUrl = "www.febtop.com";
 legal = "Copyright (C) 2012-2015 by Autodesk, Inc.";
 certificationLevel = 2;
 minimumRevision = 24000;
 
-longDescription = "Generic post for Optimus. This post suppors only milling, laser cutting will come soon.";
+longDescription = "Generic post for Optimus. This post supports only milling, adjusted by screek";
 
 extension = "gcode";
 setCodePage("ascii");
@@ -49,7 +50,7 @@ properties = {
   laserEtchPower: 0.1, // the laser etching power
   laserPower: 1, // laser cutting power
   useLaserM3M5: false, // activate/deactivate laser using M3/M5
-  setzaixsheightzero: true //set z aixs before milling
+  resetOriginBeforeStart: false // adds an origin reset for the current position and moves to Z=5 after
 };
 
 var numberOfToolSlots = 9999;
@@ -417,6 +418,14 @@ function onSection() {
       (tool.type == TOOL_LASER_CUTTER)) {
     writeBlock(mFormat.format(3)); // activate laser
   }
+  
+  if (properties.resetOriginBeforeStart) {
+	writeln("");
+	writeComment("Resetting origin before start");
+	writeBlock(gFormat.format(92), "X" + xyzFormat.format(0), "Y" + xyzFormat.format(0), "Z" + xyzFormat.format(0));
+	writeBlock(gFormat.format(0), "Z" + xyzFormat.format(5));
+	writeln("");
+  }
 
   if (insertToolCall || retracted) {
     var lengthOffset = tool.lengthOffset;
@@ -425,17 +434,15 @@ function onSection() {
       return;
     }
 
-    //gMotionModal.reset();
-    if(properties.setzaixsheightzero == true){
-    writeBlock(gFormat.format(92),"Z" + xyzFormat.format(0));//SET Z HEIGHT = 0
-    }
-    if (!machineConfiguration.isHeadConfiguration()) {
+    gMotionModal.reset();
+    //writeBlock(gPlaneModal.format(17));
 
-      writeBlock(gMotionModal.format(0), zOutput.format(initialPosition.z), feedOutput.format(highFeedrate));
+    if (!machineConfiguration.isHeadConfiguration()) {
       writeBlock(
-        //gAbsIncModal.format(90),
+        gAbsIncModal.format(90),
         gMotionModal.format(0), xOutput.format(initialPosition.x), yOutput.format(initialPosition.y), feedOutput.format(highFeedrate)
       );
+      writeBlock(gMotionModal.format(0), zOutput.format(initialPosition.z), feedOutput.format(highFeedrate));
     } else {
       writeBlock(
         gAbsIncModal.format(90),
