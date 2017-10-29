@@ -1,0 +1,2 @@
+class globalvar:
+  socket=None
