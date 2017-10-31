@@ -196,6 +196,13 @@ function onOpen() {
         writeComment(comment);
       }
     }
+	
+	if (properties.resetOriginBeforeStart) {
+	  writeln("");
+	  writeComment("Resetting origin before start");
+	  writeBlock(gFormat.format(92), "X" + xyzFormat.format(0), "Y" + xyzFormat.format(0), "Z" + xyzFormat.format(0));
+	  writeBlock(gFormat.format(0), "Z" + xyzFormat.format(5));
+	}
   }
 
   // absolute coordinates and feed per min
@@ -417,14 +424,6 @@ function onSection() {
       (currentSection.type == TYPE_JET) &&
       (tool.type == TOOL_LASER_CUTTER)) {
     writeBlock(mFormat.format(3)); // activate laser
-  }
-  
-  if (properties.resetOriginBeforeStart) {
-	writeln("");
-	writeComment("Resetting origin before start");
-	writeBlock(gFormat.format(92), "X" + xyzFormat.format(0), "Y" + xyzFormat.format(0), "Z" + xyzFormat.format(0));
-	writeBlock(gFormat.format(0), "Z" + xyzFormat.format(5));
-	writeln("");
   }
 
   if (insertToolCall || retracted) {
