@@ -50,7 +50,7 @@ properties = {
   laserEtchPower: 0.1, // the laser etching power
   laserPower: 1, // laser cutting power
   useLaserM3M5: false, // activate/deactivate laser using M3/M5
-  resetOriginBeforeStart: false // adds an origin reset for the current position and moves to Z=5 after
+  resetOriginBeforeStart: true // adds an origin reset for the current position and moves to Z=5 after
 };
 
 var numberOfToolSlots = 9999;
